@@ -1,37 +1,65 @@
 use std::fs;
 
-struct Elf {
-  cal_sum: i32,
-}
-
 const FILE_PATH: &str = "src/input.txt";
+
+const ROCK: char = 'A';
+const PAPER: char = 'B';
+const SCISSORS: char = 'C';
+
+const ROCK_ME: char = 'X';
+const PAPER_ME: char = 'Y';
+const SCISSORS_ME: char = 'Z';
 
 fn main() {
   let file_contents = fs::read_to_string(FILE_PATH).unwrap();
+  let mut my_score = 0;
 
-  let mut elves: Vec<Elf> = vec![];
-  let mut cur_sum = 0;
-  let mut three_highest = 0;
-
-  // Split up file into elves and their loads
+  // Play each round (ugly but simple)
   for l in file_contents.lines() {
-    if l.is_empty() {
-      elves.push(Elf { cal_sum: cur_sum });
-      cur_sum = 0;
-    } else {
-      cur_sum += l.parse::<i32>().unwrap();
+    // Split into enemy and own choice
+    let enemy_choice = l.chars().nth(0).unwrap();
+    let my_choice = l.chars().nth(2).unwrap();
+
+    // add base score for the chosen type + see if we won or lost, or if it's a draw
+    match my_choice {
+      ROCK_ME => {
+        match enemy_choice {
+          // draw
+          ROCK => my_score += 3,
+          // won
+          SCISSORS => my_score += 6,
+          // lost, or anything else
+          _ => {}
+        }
+        my_score += 1
+      }
+      PAPER_ME => {
+        match enemy_choice {
+          // draw
+          PAPER => my_score += 3,
+          // won
+          ROCK => my_score += 6,
+          // lost, or anything else
+          _ => {}
+        }
+        my_score += 2
+      }
+      SCISSORS_ME => {
+        match enemy_choice {
+          // draw
+          SCISSORS => my_score += 3,
+          // won
+          PAPER => my_score += 6,
+          // lost, or anything else
+          _ => {}
+        }
+        my_score += 3
+      }
+      _ => {}
     }
   }
 
-  // Sort array descending
-  elves.sort_by(|a, b| b.cal_sum.cmp(&a.cal_sum));
-
   // Answer 1
-  println!("{}", elves[0].cal_sum);
-
-  // Answer 2
-  for e in elves.iter().take(3) {
-    three_highest += e.cal_sum;
-  }
-  println!("{}", three_highest)
+  println!("\n========My Score========");
+  println!("{}", my_score);
 }
