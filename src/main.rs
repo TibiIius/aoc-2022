@@ -2,49 +2,30 @@ use std::fs;
 
 const FILE_PATH: &str = "src/input.txt";
 
-const ROCK: char = 'A';
-const PAPER: char = 'B';
-const SCISSORS: char = 'C';
-
-const LOOSE: char = 'X';
-const DRAW: char = 'Y';
-const WIN: char = 'Z';
-
 fn main() {
   let file_contents = fs::read_to_string(FILE_PATH).unwrap();
-  let mut my_score = 0;
+  let mut sum = 0;
+  let mut cur_chars: Vec<char> = vec![];
 
-  // Play each round (ugly but simple)
   for l in file_contents.lines() {
-    // Split into enemy and own choice
-    let enemy_choice = l.chars().nth(0).unwrap();
-    let my_choice = l.chars().nth(2).unwrap();
+    let mid: usize = l.len() / 2;
+    let (s1, s2) = l.split_at(mid);
 
-    // add base score for the chosen type + see if we won or lost, or if it's a draw
-    match enemy_choice {
-      ROCK => match my_choice {
-        LOOSE => my_score += 3,
-        DRAW => my_score += 1 + 3,
-        WIN => my_score += 2 + 6,
-        _ => {}
-      },
-      PAPER => match my_choice {
-        LOOSE => my_score += 1,
-        DRAW => my_score += 2 + 3,
-        WIN => my_score += 3 + 6,
-        _ => {}
-      },
-      SCISSORS => match my_choice {
-        LOOSE => my_score += 2,
-        DRAW => my_score += 3 + 3,
-        WIN => my_score += 1 + 6,
-        _ => {}
-      },
-      _ => {}
+    for c in s2.chars() {
+      if s1.contains(c) && !cur_chars.contains(&c) {
+        cur_chars.push(c);
+        // this way we only need to check the char once and can just add the offset to the result
+        if c.is_uppercase() {
+          sum += 26;
+        }
+
+        let c = c.to_ascii_lowercase();
+
+        sum += c as u16 - 96;
+      }
     }
+    cur_chars = vec![];
   }
 
-  // Answer 1
-  println!("\n========My Score========");
-  println!("{}", my_score);
+  println!("====Answer====\n{}", sum);
 }
