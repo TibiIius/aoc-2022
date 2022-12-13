@@ -5,33 +5,26 @@ const FILE_PATH: &str = "src/input.txt";
 fn main() {
   let file_contents = fs::read_to_string(FILE_PATH).unwrap();
   let mut sum = 0;
-  let mut count = 0;
-  let mut cur_lines: Vec<&str> = vec![];
-  let mut cur_char: char = ' ';
 
   for l in file_contents.lines() {
-    if count < 3 {
-      cur_lines.push(l);
-      count += 1;
-      continue;
+    let l_vec: Vec<&str> = l.split(',').collect();
+    let (part1, part2) = (l_vec.first().unwrap().to_owned(), l_vec.last().unwrap().to_owned());
+    let part1_nums: Vec<&str> = part1.split('-').collect();
+    let part2_nums: Vec<&str> = part2.split('-').collect();
+    let (part1_lower, part1_higher) = (
+      part1_nums.first().unwrap().parse::<i32>().unwrap(),
+      part1_nums.last().unwrap().parse::<i32>().unwrap(),
+    );
+    let (part2_lower, part2_higher) = (
+      part2_nums.first().unwrap().parse::<i32>().unwrap(),
+      part2_nums.last().unwrap().parse::<i32>().unwrap(),
+    );
+
+    if (part1_lower <= part2_lower && part1_higher >= part2_higher)
+      || (part2_lower <= part1_lower && part2_higher >= part1_higher)
+    {
+      sum += 1;
     }
-
-    for c in cur_lines.first().unwrap().chars() {
-      if cur_lines.get(1).unwrap().contains(c) && cur_lines.get(2).unwrap().contains(c) && c != cur_char {
-        cur_char = c;
-        if c.is_uppercase() {
-          sum += 26;
-        }
-
-        let c = c.to_ascii_lowercase();
-
-        sum += c as u16 - 96;
-      }
-    }
-
-    cur_lines = vec![l];
-    count = 1;
-    cur_char = ' ';
   }
 
   println!("\n====Answer====\n{}", sum);
