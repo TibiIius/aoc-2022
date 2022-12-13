@@ -22,7 +22,12 @@ fn main() {
 
     if (part1_lower <= part2_lower && part1_higher >= part2_higher)
       || (part2_lower <= part1_lower && part2_higher >= part1_higher)
+      || (part1_higher == part2_lower)
+      || (part1_higher <= part2_higher && part1_lower <= part2_higher && part1_higher >= part2_lower)
+      || (part2_higher <= part1_higher && part2_lower <= part1_higher && part2_higher >= part1_lower)
     {
+      print!("{part1_lower}, {part1_higher} -- ");
+      println!("{part2_lower}, {part2_higher}");
       sum += 1;
     }
   }
